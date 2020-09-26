@@ -144,7 +144,7 @@ function fillCard() {
   const accomodationObject = generateMocks()[0];
 
   //  Клонируем шаблон и наполняем карточку
-  let newCardTemplate = cloneElement(cardTemplate);
+  const newCardTemplate = cloneElement(cardTemplate);
   const newCardTitle = newCardTemplate.querySelector(`.popup__title`);
   const newCardAddress = newCardTemplate.querySelector(`.popup__text--address`);
   const newCardPrice = newCardTemplate.querySelector(`.popup__text--price`);
@@ -175,14 +175,14 @@ function fillCard() {
   }
 
   //  Скрываем все удобства
-  let newCardFeatures = newCardTemplate.querySelector(`.popup__features`).children;
+  const newCardFeatures = newCardTemplate.querySelector(`.popup__features`).children;
   for (let i = 0; i < newCardFeatures.length; i++) {
     newCardFeatures[i].classList.add(`hidden`);
   }
 
   //  Показываем удобства в наличии
   for (let i = 0; i < accomodationObject.offer.features.length; i++) {
-    let visibleFeature = newCardTemplate.querySelector(`.popup__feature--${accomodationObject.offer.features[i]}`);
+    const visibleFeature = newCardTemplate.querySelector(`.popup__feature--${accomodationObject.offer.features[i]}`);
     visibleFeature.classList.remove(`hidden`);
   }
 
