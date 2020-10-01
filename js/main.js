@@ -11,7 +11,7 @@ function generateMocks(quantity = 8) {
   //  Задаём константы
   const COORDINATE_X_DIAPASON = {
     start: 0,
-    end: document.querySelector(`.map__overlay`).offsetWidth /* document.body.clientWidth */
+    end: document.querySelector(`.map__overlay`).offsetWidth
   };
   const COORDINATE_Y_DIAPASON = {
     start: 130,
@@ -46,21 +46,6 @@ function generateMocks(quantity = 8) {
   let title = `Пример заголовка`;
   let description = `Пример описания объекта`;
 
-  //  Получаем случайное число комнат (по умолчанию в диапазоне от 1 до 8)
-  function getRandomRoomsQuantity(from = 1, to = 8) {
-    return getRandomNumber(from, to);
-  }
-
-  //  Получаем случайное число гостей (по умолчанию от 1 до 15)
-  function getRandomGuestsQuantity(from = 1, to = 15) {
-    return getRandomNumber(from, to);
-  }
-
-  //  Получаем случайную стоимость суток (по умолчанию от 900 до 30000)
-  function getRandomPrice(from = 900, to = 30000) {
-    return getRandomNumber(from, to);
-  }
-
   //  Генерируем quantity объектов и записываем их в массив
   for (let i = 1; i <= quantity; i++) {
     generatedObjects.push({
@@ -70,10 +55,10 @@ function generateMocks(quantity = 8) {
       offer: {
         title: `${title}`,
         address: `600, 350`,
-        price: getRandomPrice(),
+        price: getRandomNumber(900, 30000),
         type: `${getRandomElement(ACCOMODATION)}`,
-        rooms: getRandomRoomsQuantity(),
-        guests: getRandomGuestsQuantity(),
+        rooms: getRandomNumber(1, 8),
+        guests: getRandomNumber(1, 15),
         checkin: `${getRandomElement(CHECKIN_CHECKOUT_TIMES)}`,
         checkout: `${getRandomElement(CHECKIN_CHECKOUT_TIMES)}`,
         features: getRandomLengthString(FEATURES),
@@ -102,14 +87,14 @@ const pinTemplate = document.querySelector(`#pin`).content;
 const pin = document.querySelector(`.map__pin`);
 
 // Рассчитываем смещение по осям X и Y и сохраняем значения
-function getShiftX() {
-  return pin.offsetWidth / 2;
+function getShiftX(element) {
+  return element.offsetWidth / 2;
 }
-function getShiftY() {
-  return pin.offsetHeight;
+function getShiftY(element) {
+  return element.offsetHeight;
 }
-const xCoefficient = getShiftX();
-const yCoefficient = getShiftY();
+const xCoefficient = getShiftX(pin);
+const yCoefficient = getShiftY(pin);
 
 //  Отрисовываем метки на карте
 function drawPins() {
@@ -124,10 +109,11 @@ function drawPins() {
   }
   return parentPinBlock;
 }
-drawPins();
+//  drawPins();
 
-//  Создаём карточку объекта размещения
-function fillCard() {
+/*
+//  Отрисовываем карточку объекта размещения
+(function fillCard() {
 
   //  Сохраняем переводы на русский язык
   const TRANSLATIONS = {
@@ -191,8 +177,87 @@ function fillCard() {
 
   //  Вставляем карточку в DOM
   mapBlock.insertBefore(newCardTemplate, filtersContainer);
+})();
+*/
 
-  return;
+//  Делаем страницу неактивной при первой загрузке
+const accomodationOptionsFormItem = document.querySelector(`.ad-form`).children;
+const accomodationFiltersFormItem = document.querySelector(`.map__filters`).children;
+const options = Array.from(accomodationOptionsFormItem);
+const filters = Array.from(accomodationFiltersFormItem);
+const mainPinButton = document.querySelector(`.map__pin--main`);
+
+function deactivatePage() {
+  function setDisabled(control) {
+    return control.setAttribute(`disabled`, true);
+  }
+  options.forEach(function (value) {
+    setDisabled(value);
+  });
+  filters.forEach(function (value) {
+    setDisabled(value);
+  });
 }
 
-fillCard();
+document.addEventListener(`DOMContentLoaded`, deactivatePage);
+
+//  Делаем страницу активной при клике на метку левой кнопкой мыши или клавишей Enter
+function activatePage() {
+  function setEnabled(control) {
+    return control.removeAttribute(`disabled`);
+  }
+  options.forEach(function (value) {
+    setEnabled(value);
+  });
+  filters.forEach(function (value) {
+    setEnabled(value);
+  });
+  drawPins();
+
+  const accomodationAddress = document.querySelector(`#address`);
+  const mainPinCoordinates = mainPinButton.getBoundingClientRect();
+
+  const xCoefficientForMainPin = getShiftX(mainPinButton);
+  const yCoefficientForMainPin = getShiftY(mainPinButton);
+
+  const mainPinCoordinateX = Math.round(mainPinCoordinates.x + window.scrollX - xCoefficientForMainPin);
+  const mainPinCoordinateY = Math.round(mainPinCoordinates.y + window.scrollY - yCoefficientForMainPin);
+
+  accomodationAddress.value = `${mainPinCoordinateX}, ${mainPinCoordinateY}`;
+}
+
+mainPinButton.addEventListener(`mousedown`, function (evt) {
+  if (evt.button === 0) {
+    activatePage();
+  }
+});
+
+mainPinButton.addEventListener(`keydown`, function (evt) {
+  if (evt.key === `Enter`) {
+    activatePage();
+  }
+});
+
+
+//  Валидируем форму
+const roomsQuantityInput = document.querySelector(`#room_number`);
+const guestsQuantityInput = document.querySelector(`#capacity`);
+
+function matchRoomsAndGuests() {
+
+  const roomsQuantityInputValue = Number(roomsQuantityInput.value);
+  const guestsQuantityInputValue = Number(guestsQuantityInput.value);
+
+  if (roomsQuantityInputValue > 3 && guestsQuantityInputValue !== 0) {
+    guestsQuantityInput.setCustomValidity(`Сто комнат — только не для гостей`);
+  } else if (guestsQuantityInputValue === 0 && roomsQuantityInputValue <= 3) {
+    guestsQuantityInput.setCustomValidity(`Не для гостей только 100 комнат`);
+  } else if (roomsQuantityInputValue < guestsQuantityInputValue) {
+    guestsQuantityInput.setCustomValidity(`Одна комната — максимум для одного гостя`);
+  } else {
+    guestsQuantityInput.setCustomValidity(``);
+  }
+  guestsQuantityInput.reportValidity();
+}
+
+roomsQuantityInput.addEventListener(`change`, matchRoomsAndGuests);
