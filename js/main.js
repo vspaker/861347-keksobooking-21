@@ -4,6 +4,7 @@ function cloneElement(template) {
   return template.cloneNode(true);
 }
 
+
 //  Создаём моки данных с возможностью менять количество объектов
 function generateMocks(quantity = 8) {
   let generatedObjects = [];
@@ -77,27 +78,27 @@ function generateMocks(quantity = 8) {
 //  Сохраняем мок
 const mock = generateMocks();
 
-//  Переключаем карту в активное состояние
-const mapBlock = document.querySelector(`.map`);
-mapBlock.classList.remove(`map--faded`);
-
 //  Находим нужные элементы в DOM
 const parentPinBlock = document.querySelector(`.map__pins`);
 const pinTemplate = document.querySelector(`#pin`).content;
 const pin = document.querySelector(`.map__pin`);
 
 // Рассчитываем смещение по осям X и Y и сохраняем значения
-function getShiftX(element) {
-  return element.offsetWidth / 2;
+function getShiftX(element, divider = 1) {
+  return element.offsetWidth / divider;
 }
-function getShiftY(element) {
-  return element.offsetHeight;
+function getShiftY(element, divider = 1) {
+  return element.offsetHeight / divider;
 }
-const xCoefficient = getShiftX(pin);
+const xCoefficient = getShiftX(pin, 2);
 const yCoefficient = getShiftY(pin);
 
 //  Отрисовываем метки на карте
 function drawPins() {
+  //  Переключаем карту в активное состояние
+  let mapBlock = document.querySelector(`.map`);
+  mapBlock.classList.remove(`map--faded`);
+
   for (let i = 0; i < mock.length; i++) {
     const newPin = cloneElement(pinTemplate);
     const newPinImage = newPin.querySelector(`img`);
@@ -111,81 +112,15 @@ function drawPins() {
 }
 //  drawPins();
 
-/*
-//  Отрисовываем карточку объекта размещения
-(function fillCard() {
-
-  //  Сохраняем переводы на русский язык
-  const TRANSLATIONS = {
-    flat: `Квартира`,
-    bungalow: `Бунгало`,
-    house: `Дом`,
-    palace: `Дворец`
-  };
-
-  //  Достаём нужный шаблон
-  const cardTemplate = document.querySelector(`#card`).content;
-
-  //  Сохраняем первый мок
-  const accomodationObject = generateMocks()[0];
-
-  //  Клонируем шаблон и наполняем карточку
-  const newCardTemplate = cloneElement(cardTemplate);
-  const newCardTitle = newCardTemplate.querySelector(`.popup__title`);
-  const newCardAddress = newCardTemplate.querySelector(`.popup__text--address`);
-  const newCardPrice = newCardTemplate.querySelector(`.popup__text--price`);
-  const newCardType = newCardTemplate.querySelector(`.popup__type`);
-  const newCardGuestsAndRooms = newCardTemplate.querySelector(`.popup__text--capacity`);
-  const newCardCheckinCheckoutTimes = newCardTemplate.querySelector(`.popup__text--time`);
-  const newCardDescription = newCardTemplate.querySelector(`.popup__description`);
-  const newCardPhotos = newCardTemplate.querySelector(`.popup__photos`);
-  const newCardImageItem = newCardPhotos.querySelector(`img`);
-  const newCardUserAvatar = newCardTemplate.querySelector(`.popup__avatar`);
-  newCardTitle.textContent = accomodationObject.offer.title;
-  newCardAddress.textContent = accomodationObject.offer.address;
-  newCardPrice.textContent = `${accomodationObject.offer.price}₽/ночь`;
-  newCardType.textContent = `${TRANSLATIONS[accomodationObject.offer.type]}`;
-  newCardGuestsAndRooms.textContent = `${accomodationObject.offer.rooms} комнаты для ${accomodationObject.offer.guests} гостей`;
-  newCardCheckinCheckoutTimes.textContent = `Заезд после ${accomodationObject.offer.checkin}, выезд до ${generateMocks()[0].offer.checkout}`;
-  newCardDescription.textContent = `${accomodationObject.offer.description}`;
-  newCardUserAvatar.src = `${accomodationObject.author.avatar}`;
-  newCardImageItem.src = accomodationObject.offer.photos[0];
-
-  //  Выводим фотографии объекта, если их больше одной
-  if (accomodationObject.offer.photos.length > 1) {
-    for (let i = 1; i < accomodationObject.offer.photos.length; i++) {
-      const newImage = newCardImageItem.cloneNode(true);
-      newImage.src = accomodationObject.offer.photos[i];
-      newCardPhotos.appendChild(newImage);
-    }
-  }
-
-  //  Скрываем все удобства
-  const newCardFeatures = newCardTemplate.querySelector(`.popup__features`).children;
-  for (let i = 0; i < newCardFeatures.length; i++) {
-    newCardFeatures[i].classList.add(`hidden`);
-  }
-
-  //  Показываем удобства в наличии
-  for (let i = 0; i < accomodationObject.offer.features.length; i++) {
-    const visibleFeature = newCardTemplate.querySelector(`.popup__feature--${accomodationObject.offer.features[i]}`);
-    visibleFeature.classList.remove(`hidden`);
-  }
-
-  //  Сохраняем родителя и элемент, перед которым будем вставлять карточку
-  const filtersContainer = document.querySelector(`.map__filters-container`);
-
-  //  Вставляем карточку в DOM
-  mapBlock.insertBefore(newCardTemplate, filtersContainer);
-})();
-*/
-
 //  Делаем страницу неактивной при первой загрузке
+let accomodationAddress = document.querySelector(`#address`);
+
 const accomodationOptionsFormItem = document.querySelector(`.ad-form`).children;
 const accomodationFiltersFormItem = document.querySelector(`.map__filters`).children;
 const options = Array.from(accomodationOptionsFormItem);
 const filters = Array.from(accomodationFiltersFormItem);
 const mainPinButton = document.querySelector(`.map__pin--main`);
+let mainPinCoordinates = mainPinButton.getBoundingClientRect();
 
 function deactivatePage() {
   function setDisabled(control) {
@@ -197,11 +132,17 @@ function deactivatePage() {
   filters.forEach(function (value) {
     setDisabled(value);
   });
+  const xCoefficientForMainPinInactive = getShiftX(mainPinButton, 2);
+  const yCoefficientForMainPinInactive = getShiftY(mainPinButton, 2);
+  const mainPinInactiveCoordinateX = Math.round(mainPinCoordinates.x + window.scrollX - xCoefficientForMainPinInactive);
+  const mainPinInactiveCoordinateY = Math.round(mainPinCoordinates.y + window.scrollY - yCoefficientForMainPinInactive);
+  accomodationAddress.value = `${mainPinInactiveCoordinateX}, ${mainPinInactiveCoordinateY}`;
 }
 
 document.addEventListener(`DOMContentLoaded`, deactivatePage);
 
 //  Делаем страницу активной при клике на метку левой кнопкой мыши или клавишей Enter
+let adForm = document.querySelector(`.ad-form`);
 function activatePage() {
   function setEnabled(control) {
     return control.removeAttribute(`disabled`);
@@ -214,16 +155,18 @@ function activatePage() {
   });
   drawPins();
 
-  const accomodationAddress = document.querySelector(`#address`);
-  const mainPinCoordinates = mainPinButton.getBoundingClientRect();
-
-  const xCoefficientForMainPin = getShiftX(mainPinButton);
+  const xCoefficientForMainPin = getShiftX(mainPinButton, 2);
   const yCoefficientForMainPin = getShiftY(mainPinButton);
 
   const mainPinCoordinateX = Math.round(mainPinCoordinates.x + window.scrollX - xCoefficientForMainPin);
   const mainPinCoordinateY = Math.round(mainPinCoordinates.y + window.scrollY - yCoefficientForMainPin);
 
   accomodationAddress.value = `${mainPinCoordinateX}, ${mainPinCoordinateY}`;
+
+  adForm.classList.remove(`ad-form--disabled`);
+  const addressInput = adForm.querySelector(`#address`);
+  addressInput.setAttribute(`disabled`, `true`);
+
 }
 
 mainPinButton.addEventListener(`mousedown`, function (evt) {
@@ -260,4 +203,4 @@ function matchRoomsAndGuests() {
   guestsQuantityInput.reportValidity();
 }
 
-roomsQuantityInput.addEventListener(`change`, matchRoomsAndGuests);
+adForm.addEventListener(`change`, matchRoomsAndGuests);
