@@ -4,7 +4,6 @@ function cloneElement(template) {
   return template.cloneNode(true);
 }
 
-
 //  Создаём моки данных с возможностью менять количество объектов
 function generateMocks(quantity = 8) {
   let generatedObjects = [];
@@ -96,7 +95,7 @@ const yCoefficient = getShiftY(pin);
 //  Отрисовываем метки на карте
 function drawPins() {
   //  Переключаем карту в активное состояние
-  let mapBlock = document.querySelector(`.map`);
+  const mapBlock = document.querySelector(`.map`);
   mapBlock.classList.remove(`map--faded`);
 
   for (let i = 0; i < mock.length; i++) {
@@ -111,6 +110,74 @@ function drawPins() {
   return parentPinBlock;
 }
 //  drawPins();
+
+//  Отрисовываем карточку объекта размещения
+(function fillCard() {
+
+  //  Сохраняем переводы на русский язык
+  const TRANSLATIONS = {
+    flat: `Квартира`,
+    bungalow: `Бунгало`,
+    house: `Дом`,
+    palace: `Дворец`
+  };
+
+  //  Достаём нужный шаблон
+  const cardTemplate = document.querySelector(`#card`).content;
+
+  //  Сохраняем первый мок
+  const accomodationObject = generateMocks()[0];
+
+  //  Клонируем шаблон и наполняем карточку
+  const newCardTemplate = cloneElement(cardTemplate);
+  const newCardTitle = newCardTemplate.querySelector(`.popup__title`);
+  const newCardAddress = newCardTemplate.querySelector(`.popup__text--address`);
+  const newCardPrice = newCardTemplate.querySelector(`.popup__text--price`);
+  const newCardType = newCardTemplate.querySelector(`.popup__type`);
+  const newCardGuestsAndRooms = newCardTemplate.querySelector(`.popup__text--capacity`);
+  const newCardCheckinCheckoutTimes = newCardTemplate.querySelector(`.popup__text--time`);
+  const newCardDescription = newCardTemplate.querySelector(`.popup__description`);
+  const newCardPhotos = newCardTemplate.querySelector(`.popup__photos`);
+  const newCardImageItem = newCardPhotos.querySelector(`img`);
+  const newCardUserAvatar = newCardTemplate.querySelector(`.popup__avatar`);
+  newCardTitle.textContent = accomodationObject.offer.title;
+  newCardAddress.textContent = accomodationObject.offer.address;
+  newCardPrice.textContent = `${accomodationObject.offer.price}₽/ночь`;
+  newCardType.textContent = `${TRANSLATIONS[accomodationObject.offer.type]}`;
+  newCardGuestsAndRooms.textContent = `${accomodationObject.offer.rooms} комнаты для ${accomodationObject.offer.guests} гостей`;
+  newCardCheckinCheckoutTimes.textContent = `Заезд после ${accomodationObject.offer.checkin}, выезд до ${generateMocks()[0].offer.checkout}`;
+  newCardDescription.textContent = `${accomodationObject.offer.description}`;
+  newCardUserAvatar.src = `${accomodationObject.author.avatar}`;
+  newCardImageItem.src = accomodationObject.offer.photos[0];
+
+  //  Выводим фотографии объекта, если их больше одной
+  if (accomodationObject.offer.photos.length > 1) {
+    for (let i = 1; i < accomodationObject.offer.photos.length; i++) {
+      const newImage = newCardImageItem.cloneNode(true);
+      newImage.src = accomodationObject.offer.photos[i];
+      newCardPhotos.appendChild(newImage);
+    }
+  }
+
+  //  Скрываем все удобства
+  const newCardFeatures = newCardTemplate.querySelector(`.popup__features`).children;
+  for (let i = 0; i < newCardFeatures.length; i++) {
+    newCardFeatures[i].classList.add(`hidden`);
+  }
+
+  //  Показываем удобства в наличии
+  for (let i = 0; i < accomodationObject.offer.features.length; i++) {
+    const visibleFeature = newCardTemplate.querySelector(`.popup__feature--${accomodationObject.offer.features[i]}`);
+    visibleFeature.classList.remove(`hidden`);
+  }
+
+  //  Сохраняем родителя и элемент, перед которым будем вставлять карточку
+  const filtersContainer = document.querySelector(`.map__filters-container`);
+
+  //  Вставляем карточку в DOM
+  const mapBlock = document.querySelector(`.map`);
+  mapBlock.insertBefore(newCardTemplate, filtersContainer);
+})();
 
 //  Делаем страницу неактивной при первой загрузке
 let accomodationAddress = document.querySelector(`#address`);
@@ -181,26 +248,29 @@ mainPinButton.addEventListener(`keydown`, function (evt) {
   }
 });
 
-
 //  Валидируем форму
 const roomsQuantityInput = document.querySelector(`#room_number`);
 const guestsQuantityInput = document.querySelector(`#capacity`);
 
-function matchRoomsAndGuests() {
+function matchRoomsAndGuests(evt) {
 
   const roomsQuantityInputValue = Number(roomsQuantityInput.value);
   const guestsQuantityInputValue = Number(guestsQuantityInput.value);
 
   if (roomsQuantityInputValue > 3 && guestsQuantityInputValue !== 0) {
     guestsQuantityInput.setCustomValidity(`Сто комнат — только не для гостей`);
+    evt.preventDefault();
   } else if (guestsQuantityInputValue === 0 && roomsQuantityInputValue <= 3) {
     guestsQuantityInput.setCustomValidity(`Не для гостей только 100 комнат`);
+    evt.preventDefault();
   } else if (roomsQuantityInputValue < guestsQuantityInputValue) {
-    guestsQuantityInput.setCustomValidity(`Одна комната — максимум для одного гостя`);
+    guestsQuantityInput.setCustomValidity(`Каждая комната вмещает только одного гостя`);
+    evt.preventDefault();
   } else {
     guestsQuantityInput.setCustomValidity(``);
   }
   guestsQuantityInput.reportValidity();
 }
 
-adForm.addEventListener(`change`, matchRoomsAndGuests);
+roomsQuantityInput.addEventListener(`change`, matchRoomsAndGuests);
+adForm.addEventListener(`submit`, matchRoomsAndGuests);
