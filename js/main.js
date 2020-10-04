@@ -233,7 +233,7 @@ function activatePage() {
     const mapBlock = document.querySelector(`.map`);
     mapBlock.insertBefore(newCardTemplate, filtersContainer);
   })();
-
+  document.removeEventListener(`DOMContentLoaded`, deactivatePage);
 }
 
 mainPinButton.addEventListener(`mousedown`, function (evt) {
