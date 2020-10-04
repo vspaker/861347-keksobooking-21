@@ -234,19 +234,24 @@ function activatePage() {
     mapBlock.insertBefore(newCardTemplate, filtersContainer);
   })();
   document.removeEventListener(`DOMContentLoaded`, deactivatePage);
+  mainPinButton.removeEventListener(`mousedown`, onMainPinButtonLeftClick);
+  mainPinButton.removeEventListener(`keydown`, onMainPinButtonEnterPress);
 }
 
-mainPinButton.addEventListener(`mousedown`, function (evt) {
+function onMainPinButtonLeftClick(evt) {
   if (evt.button === 0) {
     activatePage();
   }
-});
+}
 
-mainPinButton.addEventListener(`keydown`, function (evt) {
+function onMainPinButtonEnterPress(evt) {
   if (evt.key === `Enter`) {
     activatePage();
   }
-});
+}
+
+mainPinButton.addEventListener(`mousedown`, onMainPinButtonLeftClick);
+mainPinButton.addEventListener(`keydown`, onMainPinButtonEnterPress);
 
 //  Валидируем форму
 const roomsQuantityInput = document.querySelector(`#room_number`);
