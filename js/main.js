@@ -121,7 +121,7 @@ const filters = Array.from(accomodationFiltersFormItem);
 const mainPinButton = document.querySelector(`.map__pin--main`);
 let mainPinCoordinates = mainPinButton.getBoundingClientRect();
 
-function deactivatePage() {
+function onDOMLoadedDeactivatePage() {
   function setDisabled(control) {
     return control.setAttribute(`disabled`, true);
   }
@@ -138,7 +138,7 @@ function deactivatePage() {
   accomodationAddress.value = `${mainPinInactiveCoordinateX}, ${mainPinInactiveCoordinateY}`;
 }
 
-document.addEventListener(`DOMContentLoaded`, deactivatePage);
+document.addEventListener(`DOMContentLoaded`, onDOMLoadedDeactivatePage);
 
 //  Делаем страницу активной при клике на метку левой кнопкой мыши или клавишей Enter
 let adForm = document.querySelector(`.ad-form`);
@@ -233,7 +233,7 @@ function activatePage() {
     const mapBlock = document.querySelector(`.map`);
     mapBlock.insertBefore(newCardTemplate, filtersContainer);
   })();
-  document.removeEventListener(`DOMContentLoaded`, deactivatePage);
+  document.removeEventListener(`DOMContentLoaded`, onDOMLoadedDeactivatePage);
   mainPinButton.removeEventListener(`mousedown`, onMainPinButtonLeftClick);
   mainPinButton.removeEventListener(`keydown`, onMainPinButtonEnterPress);
 }
