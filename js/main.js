@@ -252,25 +252,20 @@ mainPinButton.addEventListener(`keydown`, function (evt) {
 const roomsQuantityInput = document.querySelector(`#room_number`);
 const guestsQuantityInput = document.querySelector(`#capacity`);
 
-function matchRoomsAndGuests(evt) {
+function matchRoomsAndGuests() {
 
   const roomsQuantityInputValue = Number(roomsQuantityInput.value);
   const guestsQuantityInputValue = Number(guestsQuantityInput.value);
 
   if (roomsQuantityInputValue > 3 && guestsQuantityInputValue !== 0) {
     guestsQuantityInput.setCustomValidity(`Сто комнат — только не для гостей`);
-    //  evt.preventDefault();
   } else if (guestsQuantityInputValue === 0 && roomsQuantityInputValue <= 3) {
     guestsQuantityInput.setCustomValidity(`Не для гостей только 100 комнат`);
-    //  evt.preventDefault();
   } else if (roomsQuantityInputValue < guestsQuantityInputValue) {
     guestsQuantityInput.setCustomValidity(`Каждая комната вмещает только одного гостя`);
-    //  evt.preventDefault();
   } else {
     guestsQuantityInput.setCustomValidity(``);
   }
-  //  guestsQuantityInput.reportValidity();
 }
 
-//  roomsQuantityInput.addEventListener(`change`, matchRoomsAndGuests);
 adForm.addEventListener(`change`, matchRoomsAndGuests);
