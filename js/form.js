@@ -1,13 +1,13 @@
 "use strict";
 (function () {
-  const roomsQuantityInput = window.page.adForm.querySelector(`#room_number`);
-  const guestsQuantityInput = window.page.adForm.querySelector(`#capacity`);
-  const accomodationType = window.page.adForm.querySelector(`#type`);
-  const accomodationPrice = window.page.adForm.querySelector(`#price`);
-  let timeIn = window.page.adForm.querySelector(`#timein`);
-  let timeOut = window.page.adForm.querySelector(`#timeout`);
+  const roomsQuantityInput = window.nodes.adForm.querySelector(`#room_number`);
+  const guestsQuantityInput = window.nodes.adForm.querySelector(`#capacity`);
+  const accomodationType = window.nodes.adForm.querySelector(`#type`);
+  const accomodationPrice = window.nodes.adForm.querySelector(`#price`);
+  const timeIn = window.nodes.adForm.querySelector(`#timein`);
+  const timeOut = window.nodes.adForm.querySelector(`#timeout`);
 
-  function validateForm() {
+  const validateForm = () => {
 
     const roomsQuantityInputValue = Number(roomsQuantityInput.value);
     const guestsQuantityInputValue = Number(guestsQuantityInput.value);
@@ -22,16 +22,22 @@
       guestsQuantityInput.setCustomValidity(``);
     }
 
+    const minPrice = {
+      flat: 1000,
+      house: 5000,
+      palace: 10000
+    };
+
     if (accomodationType.value === `bungalo`) {
       accomodationPrice.setCustomValidity(``);
       accomodationPrice.placeholder = 0;
-    } else if (accomodationType.value === `flat` && accomodationPrice.value < 1000) {
+    } else if (accomodationType.value === `flat` && accomodationPrice.value < minPrice.flat) {
       accomodationPrice.setCustomValidity(`Минимальная стоимость квартиры — 1000 ₽`);
       accomodationPrice.placeholder = 1000;
-    } else if (accomodationType.value === `house` && accomodationPrice.value < 5000) {
+    } else if (accomodationType.value === `house` && accomodationPrice.value < minPrice.house) {
       accomodationPrice.setCustomValidity(`Минимальная стоимость дома — 5000 ₽`);
       accomodationPrice.placeholder = 5000;
-    } else if (accomodationType.value === `palace` && accomodationPrice.value < 10000) {
+    } else if (accomodationType.value === `palace` && accomodationPrice.value < minPrice.palace) {
       accomodationPrice.setCustomValidity(`Минимальная стоимость дворца — 10000 ₽`);
       accomodationPrice.placeholder = 10000;
     } else {
@@ -42,10 +48,10 @@
       timeOut.value = timeIn.value;
     }
 
-  }
+  };
 
-  window.page.adForm.addEventListener(`change`, validateForm);
-  timeOut.addEventListener(`change`, function () {
+  window.nodes.adForm.addEventListener(`change`, validateForm);
+  timeOut.addEventListener(`change`, () => {
     timeIn.value = timeOut.value;
   });
 })();
