@@ -34,7 +34,8 @@
     }
     return parentPinBlock;
   };
-  window.pin = {
+
+  window.pins = {
     drawPins,
     mock
   };

@@ -27,17 +27,23 @@
       house: 5000,
       palace: 10000
     };
+    const houseTypes = {
+      BUNGALO: `bungalo`,
+      FLAT: `flat`,
+      HOUSE: `house`,
+      PALACE: `palace`
+    };
 
-    if (accomodationType.value === `bungalo`) {
+    if (accomodationType.value === houseTypes.BUNGALO) {
       accomodationPrice.setCustomValidity(``);
       accomodationPrice.placeholder = 0;
-    } else if (accomodationType.value === `flat` && accomodationPrice.value < minPrice.flat) {
+    } else if (accomodationType.value === houseTypes.FLAT && accomodationPrice.value < minPrice.flat) {
       accomodationPrice.setCustomValidity(`Минимальная стоимость квартиры — 1000 ₽`);
       accomodationPrice.placeholder = 1000;
-    } else if (accomodationType.value === `house` && accomodationPrice.value < minPrice.house) {
+    } else if (accomodationType.value === houseTypes.HOUSE && accomodationPrice.value < minPrice.house) {
       accomodationPrice.setCustomValidity(`Минимальная стоимость дома — 5000 ₽`);
       accomodationPrice.placeholder = 5000;
-    } else if (accomodationType.value === `palace` && accomodationPrice.value < minPrice.palace) {
+    } else if (accomodationType.value === houseTypes.PALACE && accomodationPrice.value < minPrice.palace) {
       accomodationPrice.setCustomValidity(`Минимальная стоимость дворца — 10000 ₽`);
       accomodationPrice.placeholder = 10000;
     } else {
@@ -50,8 +56,10 @@
 
   };
 
-  window.nodes.adForm.addEventListener(`change`, validateForm);
   timeOut.addEventListener(`change`, () => {
     timeIn.value = timeOut.value;
   });
+  window.form = {
+    validateForm
+  };
 })();
