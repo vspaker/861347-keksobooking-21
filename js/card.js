@@ -8,7 +8,7 @@
       palace: `Дворец`
     };
 
-    const accomodationObject = window.pin.mock[index];
+    const accomodationObject = window.pins.mock[index];
     const cardTemplate = document.querySelector(`#card`).content;
     const newCardTemplate = window.utils.cloneElement(cardTemplate);
     const newCardTitle = newCardTemplate.querySelector(`.popup__title`);
@@ -57,6 +57,7 @@
     document.addEventListener(`keydown`, window.utils.onPopUpEscPress);
     newCardCloseButton.addEventListener(`click`, window.utils.closePopup);
   };
+  window.nodes.mainPinButton.addEventListener(`mousedown`, window.utils.onPinMouseDown);
 
   window.card = {
     fillCard
