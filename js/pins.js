@@ -21,13 +21,6 @@
         newPinButton.style = `left:${houses[i].location.x - xCoefficient}px; top:${houses[i].location.y - yCoefficient}px;`;
         newPinImage.src = `${houses[i].author.avatar}`;
         newPinImage.alt = `${houses[i].offer.title}`;
-        newPinButton.addEventListener(`keydown`, (evt) => {
-          if (evt.key === `Enter`) {
-            evt.preventDefault();
-            window.utils.closePopup();
-            window.card.fillCard(i);
-          }
-        });
         newPinButton.addEventListener(`click`, () => {
           window.utils.closePopup();
           window.card.fillCard(i);

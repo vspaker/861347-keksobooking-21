@@ -5,12 +5,10 @@
   const accomodationFiltersFormItem = document.querySelector(`.map__filters`).children;
   const options = Array.from(accomodationOptionsFormItem);
   const filters = Array.from(accomodationFiltersFormItem);
-  const mainPinCoordinates = /* {
-    x: window.nodes.mapBlock.offsetWidth - window.utils.getShiftX(window.nodes.mainPinButton),
-    y: window.nodes.mapBlock.offsetHeight
-  }; */ window.nodes.mainPinButton.getBoundingClientRect();
+  const mainPinCoordinates = window.nodes.mainPinButton.getBoundingClientRect();
 
   const deactivatePage = () => {
+    window.nodes.mapBlock.classList.add(`map--faded`);
     const setDisabled = (control) => {
       return control.setAttribute(`disabled`, true);
     };
@@ -73,5 +71,11 @@
 
   window.nodes.mainPinButton.addEventListener(`mousedown`, onMainPinButtonLeftClick);
   window.nodes.mainPinButton.addEventListener(`keydown`, onMainPinButtonEnterPress);
+  window.page = {
+    activatePage,
+    deactivatePage,
+    onMainPinButtonLeftClick,
+    onMainPinButtonEnterPress
+  };
 
 })();
