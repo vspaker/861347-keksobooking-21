@@ -37,8 +37,10 @@
     filters.forEach((value) => {
       setEnabled(value);
     });
-    window.pins.drawPins();
+    window.pins.renderPins(window.filter.updatePins());
 
+
+    window.nodes.mapBlock.classList.remove(`map--faded`);
 
     const xCoefficientForMainPin = window.utils.getShiftX(window.nodes.mainPinButton, 2);
     const yCoefficientForMainPin = window.utils.getShiftY(window.nodes.mainPinButton);
