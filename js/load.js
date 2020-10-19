@@ -3,39 +3,42 @@
   const StatusCode = {
     OK: 200
   };
+  const requestMethod = {
+    GET: `GET`,
+    POST: `POST`
+  };
   const TIMEOUT_IN_MS = 10000;
   const downloadURL = `https://21.javascript.pages.academy/keksobooking/data`;
-  const downloadData = (onSuccess, onError) => {
-    const xhr = new XMLHttpRequest();
-    xhr.responseType = `json`;
+  const uploadURL = `https://21.javascript.pages.academy/keksobooking`;
 
-    xhr.addEventListener(`load`, function () {
-      if (xhr.status === StatusCode.OK) {
-        onSuccess(xhr.response); return;
-      } onError(`Статус ответа: ` + xhr.status + ` ` + xhr.statusText);
+
+  const makeRequest = (request, onSuccess, onError) => {
+    request.responseType = `json`;
+    request.addEventListener(`load`, function () {
+      if (request.status === StatusCode.OK) {
+        onSuccess(request.response); return;
+      } onError(`Статус ответа: ` + request.status + ` ` + request.statusText);
     });
-    xhr.addEventListener(`error`, function () {
+    request.addEventListener(`error`, function () {
       onError(`Произошла ошибка соединения`);
     });
-    xhr.addEventListener(`timeout`, function () {
-      onError(`Запрос не успел выполниться за ` + xhr.timeout + `мс`);
+    addEventListener(`timeout`, function () {
+      onError(`Запрос не успел выполниться за ` + request.timeout + `мс`);
     });
+  };
 
+  const downloadData = (onSuccess, onError) => {
+    const xhr = new XMLHttpRequest();
+    makeRequest(xhr, onSuccess, onError);
     xhr.timeout = TIMEOUT_IN_MS;
-
-    xhr.open(`GET`, downloadURL);
+    xhr.open(requestMethod.GET, downloadURL);
     xhr.send();
   };
-  const uploadURL = `https://21.javascript.pages.academy/keksobooking`;
+
   const uploadData = (data, onSuccess, onError) => {
     const xhr = new XMLHttpRequest();
-    xhr.responseType = `json`;
-    xhr.addEventListener(`load`, () => {
-      if (xhr.status === StatusCode.OK) {
-        onSuccess(xhr.response); return;
-      } onError(`Статус ответа: ` + xhr.status + ` ` + xhr.statusText);
-    });
-    xhr.open(`POST`, uploadURL);
+    makeRequest(xhr, onSuccess, onError);
+    xhr.open(requestMethod.POST, uploadURL);
     xhr.send(data);
 
   };
