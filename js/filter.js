@@ -75,11 +75,11 @@
     return filteredHouses;
   };
 
-  filtersForm.addEventListener(`change`, () => {
+  filtersForm.addEventListener(`change`, window.debounce(function () {
     window.pins.removePins();
     window.utils.closePopup();
     window.pins.renderPins(updatePins());
-  });
+  }));
   window.filter = {
     updatePins
   };
