@@ -9,6 +9,19 @@
 
   const validateForm = () => {
 
+    const MinPrice = {
+      FLAT: 1000,
+      HOUSE: 5000,
+      PALACE: 10000
+    };
+    const houseTypes = {
+      bungalo: `bungalo`,
+      flat: `flat`,
+      house: `house`,
+      palace: `palace`
+    };
+    const MAX_PRICE = 1000000;
+
     const roomsQuantityInputValue = Number(roomsQuantityInput.value);
     const guestsQuantityInputValue = Number(guestsQuantityInput.value);
 
@@ -22,30 +35,24 @@
       guestsQuantityInput.setCustomValidity(``);
     }
 
-    const minPrice = {
-      flat: 1000,
-      house: 5000,
-      palace: 10000
-    };
-    const houseTypes = {
-      BUNGALO: `bungalo`,
-      FLAT: `flat`,
-      HOUSE: `house`,
-      PALACE: `palace`
-    };
-
-    if (accomodationType.value === houseTypes.BUNGALO) {
+    if (accomodationType.value === houseTypes.bungalo) {
       accomodationPrice.setCustomValidity(``);
       accomodationPrice.placeholder = 0;
-    } else if (accomodationType.value === houseTypes.FLAT && accomodationPrice.value < minPrice.flat) {
+    } else if (accomodationType.value === houseTypes.flat && accomodationPrice.value < MinPrice.FLAT) {
       accomodationPrice.setCustomValidity(`Минимальная стоимость квартиры — 1000 ₽`);
       accomodationPrice.placeholder = 1000;
-    } else if (accomodationType.value === houseTypes.HOUSE && accomodationPrice.value < minPrice.house) {
+    } else if (accomodationType.value === houseTypes.house && accomodationPrice.value < MinPrice.HOUSE) {
       accomodationPrice.setCustomValidity(`Минимальная стоимость дома — 5000 ₽`);
       accomodationPrice.placeholder = 5000;
-    } else if (accomodationType.value === houseTypes.PALACE && accomodationPrice.value < minPrice.palace) {
+    } else if (accomodationType.value === houseTypes.palace && accomodationPrice.value < MinPrice.PALACE) {
       accomodationPrice.setCustomValidity(`Минимальная стоимость дворца — 10000 ₽`);
       accomodationPrice.placeholder = 10000;
+    } else {
+      accomodationPrice.setCustomValidity(``);
+    }
+
+    if (accomodationPrice.value > MAX_PRICE) {
+      accomodationPrice.setCustomValidity(`Максимальная цена за ночь: ${MAX_PRICE}`);
     } else {
       accomodationPrice.setCustomValidity(``);
     }
@@ -62,19 +69,8 @@
 
   window.nodes.adForm.addEventListener(`submit`, (evt) => {
     const successHandler = () => {
-      window.nodes.adForm.reset();
+
       window.page.deactivatePage();
-
-      const pinsCollection = document.querySelectorAll(`.map__pin`);
-      const pins = Array.from(pinsCollection);
-      pins.shift();
-      pins.forEach((item) => {
-        item.remove();
-      });
-      window.nodes.mainPinButton.addEventListener(`mousedown`, window.page.onMainPinButtonLeftClick);
-      window.nodes.mainPinButton.addEventListener(`keydown`, window.page.onMainPinButtonEnterPress);
-
-      window.nodes.adForm.classList.add(`ad-form--disabled`);
 
       const successMessageTemplate = document.querySelector(`#success`).content;
       const successMessageElement = successMessageTemplate.cloneNode(true);
@@ -141,7 +137,7 @@
   });
   const resetButton = window.nodes.adForm.querySelector(`.ad-form__reset`);
   resetButton.addEventListener(`click`, () => {
-    window.nodes.adForm.reset();
+    window.page.deactivatePage();
   });
   window.form = {
     validateForm

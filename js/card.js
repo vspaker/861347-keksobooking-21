@@ -22,6 +22,7 @@
     const newCardImageItem = newCardPhotos.querySelector(`img`);
     const newCardUserAvatar = newCardTemplate.querySelector(`.popup__avatar`);
     const newCardCloseButton = newCardTemplate.querySelector(`.popup__close`);
+
     newCardTitle.textContent = accomodationObject.offer.title;
     newCardAddress.textContent = accomodationObject.offer.address;
     newCardPrice.textContent = `${accomodationObject.offer.price}₽/ночь`;
@@ -49,6 +50,24 @@
       const visibleFeature = newCardTemplate.querySelector(`.popup__feature--${accomodationObject.offer.features[k]}`);
       visibleFeature.classList.remove(`hidden`);
     }
+
+    const hideMissingProperty = (block, property, node) => {
+      if (accomodationObject[block].hasOwnProperty(`${property}`) === false || accomodationObject[block][property].length === 0) {
+        node.classList.add(`hidden`);
+      }
+    };
+    hideMissingProperty(`offer`, `title`, newCardTitle);
+    hideMissingProperty(`offer`, `address`, newCardAddress);
+    hideMissingProperty(`offer`, `price`, newCardPrice);
+    hideMissingProperty(`offer`, `type`, newCardType);
+    hideMissingProperty(`offer`, `price`, newCardPrice);
+    hideMissingProperty(`offer`, `rooms`, newCardGuestsAndRooms);
+    hideMissingProperty(`offer`, `guests`, newCardGuestsAndRooms);
+    hideMissingProperty(`offer`, `checkin`, newCardCheckinCheckoutTimes);
+    hideMissingProperty(`offer`, `checkout`, newCardCheckinCheckoutTimes);
+    hideMissingProperty(`offer`, `description`, newCardDescription);
+    hideMissingProperty(`author`, `avatar`, newCardUserAvatar);
+    hideMissingProperty(`offer`, `photos`, newCardImageItem);
 
     const filtersContainer = window.nodes.mapBlock.querySelector(`.map__filters-container`);
 

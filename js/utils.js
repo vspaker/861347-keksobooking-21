@@ -13,6 +13,7 @@
     const popup = document.querySelector(`.popup`);
     if (popup) {
       popup.remove();
+      window.pins.removeActiveClass();
       document.removeEventListener(`keydown`, onPopUpEscPress);
     }
   };
@@ -23,40 +24,42 @@
     }
   };
   const onPinMouseDown = (evt) => {
-    evt.preventDefault();
-    let startCoords = {
-      x: evt.clientX,
-      y: evt.clientY
-    };
-    let dragged = false;
-    const onMouseMove = (moveEvt) => {
-      moveEvt.preventDefault();
-      dragged = true;
-      window.utils.shift = {
-        x: startCoords.x - moveEvt.clientX,
-        y: startCoords.y - moveEvt.clientY
+    if (evt.button === 0) {
+      evt.preventDefault();
+      let startCoords = {
+        x: evt.clientX,
+        y: evt.clientY
       };
-      startCoords = {
-        x: moveEvt.clientX,
-        y: moveEvt.clientY
-      };
-      calculateCoords();
-    };
-    const onMouseUp = (upEvt) => {
-      upEvt.preventDefault();
-      window.nodes.mapBlock.removeEventListener(`mousemove`, onMouseMove);
-      document.removeEventListener(`mouseup`, onMouseUp);
-      if (dragged) {
-        const onClickPreventDefault = (clickEvt) => {
-          clickEvt.preventDefault();
-          calculateCoords();
-          window.nodes.mainPinButton.removeEventListener(`click`, onClickPreventDefault);
+      let dragged = false;
+      const onMouseMove = (moveEvt) => {
+        moveEvt.preventDefault();
+        dragged = true;
+        window.utils.shift = {
+          x: startCoords.x - moveEvt.clientX,
+          y: startCoords.y - moveEvt.clientY
         };
-        window.nodes.mainPinButton.addEventListener(`click`, onClickPreventDefault);
-      }
-    };
-    window.nodes.mapBlock.addEventListener(`mousemove`, onMouseMove);
-    document.addEventListener(`mouseup`, onMouseUp);
+        startCoords = {
+          x: moveEvt.clientX,
+          y: moveEvt.clientY
+        };
+        calculateCoords();
+      };
+      const onMouseUp = (upEvt) => {
+        upEvt.preventDefault();
+        window.nodes.mapBlock.removeEventListener(`mousemove`, onMouseMove);
+        document.removeEventListener(`mouseup`, onMouseUp);
+        if (dragged) {
+          const onClickPreventDefault = (clickEvt) => {
+            clickEvt.preventDefault();
+            calculateCoords();
+            window.nodes.mainPinButton.removeEventListener(`click`, onClickPreventDefault);
+          };
+          window.nodes.mainPinButton.addEventListener(`click`, onClickPreventDefault);
+        }
+      };
+      window.nodes.mapBlock.addEventListener(`mousemove`, onMouseMove);
+      document.addEventListener(`mouseup`, onMouseUp);
+    }
   };
   const calculateCoords = () => {
     const MIN_Y_COORD = 130;
@@ -103,6 +106,16 @@
 
     window.nodes.accomodationAddress.setAttribute(`value`, ` ${addressCoordX}, ${addressCoordY}`);
   };
+  const showErrorMessage = (text) => {
+    const node = document.createElement(`div`);
+    node.style = `z-index: 100; margin: 0 auto; text-align: center; background-color: red;`;
+    node.style.position = `absolute`;
+    node.style.left = 0;
+    node.style.right = 0;
+    node.style.fontSize = `30px`;
+    node.textContent = text;
+    document.body.insertAdjacentElement(`afterbegin`, node);
+  };
   window.utils = {
     cloneElement,
     getShiftX,
@@ -110,6 +123,7 @@
     onPopUpEscPress,
     closePopup,
     onPinMouseDown,
-    calculateCoords
+    calculateCoords,
+    showErrorMessage
   };
 })();

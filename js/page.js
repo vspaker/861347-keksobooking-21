@@ -1,14 +1,31 @@
 "use strict";
 (function () {
 
+  const MAIN_PIN_BUTTON_DEFAULT_POSITION = {
+    left: +/\d+/.exec(window.nodes.mainPinButton.style.left),
+    top: +/\d+/.exec(window.nodes.mainPinButton.style.top)
+  };
+  const PIN_ARROW_HEIGHT = 22;
+  const MAIN_PIN_COORDS_SHIFT_ON_ACTIVATE_PAGE = {
+    x: 0,
+    y: window.nodes.mainPinButton.offsetHeight / 2 + PIN_ARROW_HEIGHT
+  };
+  const xCoefficientForMainPinDefaultPosition = window.utils.getShiftX(window.nodes.mainPinButton, 2);
+  const yCoefficientForMainPinDefaultPosition = window.utils.getShiftY(window.nodes.mainPinButton, 2);
+  const mainPinDefaultAddressCoordinateX = Math.round(window.nodes.mainPinButton.offsetLeft + xCoefficientForMainPinDefaultPosition);
+  const mainPinDefaultAddressCoordinateY = Math.round(window.nodes.mainPinButton.offsetTop + yCoefficientForMainPinDefaultPosition);
   const accomodationOptionsFormItem = document.querySelector(`.ad-form`).children;
   const accomodationFiltersFormItem = document.querySelector(`.map__filters`).children;
   const options = Array.from(accomodationOptionsFormItem);
   const filters = Array.from(accomodationFiltersFormItem);
-  const mainPinCoordinates = window.nodes.mainPinButton.getBoundingClientRect();
 
   const deactivatePage = () => {
+    window.nodes.adForm.reset();
+    window.nodes.filtersForm.reset();
+    window.nodes.adForm.classList.add(`ad-form--disabled`);
     window.nodes.mapBlock.classList.add(`map--faded`);
+    window.pins.removePins();
+    window.utils.closePopup();
     const setDisabled = (control) => {
       return control.setAttribute(`disabled`, true);
     };
@@ -18,11 +35,12 @@
     filters.forEach((value) => {
       setDisabled(value);
     });
-    const xCoefficientForMainPinInactive = window.utils.getShiftX(window.nodes.mainPinButton, 2);
-    const yCoefficientForMainPinInactive = window.utils.getShiftY(window.nodes.mainPinButton, 2);
-    const mainPinInactiveCoordinateX = Math.round(mainPinCoordinates.x + window.scrollX - xCoefficientForMainPinInactive);
-    const mainPinInactiveCoordinateY = Math.round(mainPinCoordinates.y + window.scrollY - yCoefficientForMainPinInactive);
-    window.nodes.accomodationAddress.setAttribute(`value`, `${mainPinInactiveCoordinateX}, ${mainPinInactiveCoordinateY}`);
+    window.nodes.mainPinButton.style.left = MAIN_PIN_BUTTON_DEFAULT_POSITION.left + `px`;
+    window.nodes.mainPinButton.style.top = MAIN_PIN_BUTTON_DEFAULT_POSITION.top + `px`;
+    window.nodes.accomodationAddress.setAttribute(`value`, `${mainPinDefaultAddressCoordinateX}, ${mainPinDefaultAddressCoordinateY}`);
+
+    window.nodes.mainPinButton.addEventListener(`mousedown`, window.page.onMainPinButtonLeftClick);
+    window.nodes.mainPinButton.addEventListener(`keydown`, window.page.onMainPinButtonEnterPress);
   };
 
   document.addEventListener(`DOMContentLoaded`, deactivatePage);
@@ -37,18 +55,18 @@
     filters.forEach((value) => {
       setEnabled(value);
     });
-    window.pins.renderPins(window.filter.updatePins());
-
+    try {
+      window.pins.renderPins(window.filter.updatePins());
+    } catch (err) {
+      window.utils.showErrorMessage(`Упс! Ошибка` + err.name + `. Обновите страницу и попробуйте ещё раз!`);
+    }
 
     window.nodes.mapBlock.classList.remove(`map--faded`);
 
-    const xCoefficientForMainPin = window.utils.getShiftX(window.nodes.mainPinButton, 2);
-    const yCoefficientForMainPin = window.utils.getShiftY(window.nodes.mainPinButton);
+    const mainPinActiveCoordX = Math.round(mainPinDefaultAddressCoordinateX + MAIN_PIN_COORDS_SHIFT_ON_ACTIVATE_PAGE.x);
+    const mainPinActiveCoordY = Math.round(mainPinDefaultAddressCoordinateY + MAIN_PIN_COORDS_SHIFT_ON_ACTIVATE_PAGE.y);
 
-    const mainPinCoordinateX = Math.round(mainPinCoordinates.x + window.scrollX - xCoefficientForMainPin);
-    const mainPinCoordinateY = Math.round(mainPinCoordinates.y + window.scrollY - yCoefficientForMainPin);
-
-    window.nodes.accomodationAddress.setAttribute(`value`, `${mainPinCoordinateX}, ${mainPinCoordinateY}`);
+    window.nodes.accomodationAddress.setAttribute(`value`, `${mainPinActiveCoordX}, ${mainPinActiveCoordY}`);
 
     window.nodes.adForm.classList.remove(`ad-form--disabled`);
     const addressInput = window.nodes.adForm.querySelector(`#address`);

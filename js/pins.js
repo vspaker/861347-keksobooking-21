@@ -17,6 +17,7 @@
       newPinImage.alt = `${arr[i].offer.title}`;
       newPinButton.addEventListener(`click`, () => {
         window.utils.closePopup();
+        newPinButton.classList.toggle(`map__pin--active`);
         window.card.fillCard(i);
       });
       parentPinBlock.appendChild(newPin);
@@ -24,31 +25,40 @@
   };
 
   const successHandler = (houses) => {
+    const sortByOffer = (house) => {
+      return house.hasOwnProperty(`offer`);
+    };
+    const sortedHouses = houses.filter(sortByOffer);
     window.pins.houses = {
-      houses
+      sortedHouses
     };
   };
   const errorHandler = (errorMessage) => {
-    const node = document.createElement(`div`);
-    node.style = `z-index: 100; margin: 0 auto; text-align: center; background-color: red;`;
-    node.style.position = `absolute`;
-    node.style.left = 0;
-    node.style.right = 0;
-    node.style.fontSize = `30px`;
-    node.textContent = errorMessage;
-    document.body.insertAdjacentElement(`afterbegin`, node);
+    window.utils.showErrorMessage(errorMessage);
   };
   window.load.downloadData(successHandler, errorHandler);
 
+  const selectPins = () => {
+    const pins = Array.from(window.nodes.mapBlock.querySelectorAll(`.map__pin`));
+    pins.shift();
+    return pins;
+  };
+
   const removePins = () => {
-    const pinsToRemove = Array.from(window.nodes.mapBlock.querySelectorAll(`.map__pin`));
-    pinsToRemove.shift();
-    pinsToRemove.forEach((item) => {
+    selectPins().forEach((item) => {
       item.remove();
+    });
+  };
+  const removeActiveClass = () => {
+    selectPins().forEach((item) => {
+      if (item.classList.contains(`map__pin--active`)) {
+        item.classList.remove(`map__pin--active`);
+      }
     });
   };
   window.pins = {
     removePins,
-    renderPins
+    renderPins,
+    removeActiveClass
   };
 })();

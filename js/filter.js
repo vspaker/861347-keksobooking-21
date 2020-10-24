@@ -2,22 +2,22 @@
 (function () {
   const MAX_PINS_TO_DISPLAY = 5;
   const housingType = {
-    ANY: `any`
+    any: `any`
   };
   const housingPrice = {
-    ANY: `any`,
-    LOW: `low`,
-    MID: `mid`,
+    any: `any`,
+    low: `low`,
+    mid: `mid`,
   };
   const housingRooms = {
-    ANY: `any`
+    any: `any`
   };
   const housingGuests = {
-    ANY: `any`,
+    any: `any`,
     0: `0`
   };
 
-  const priceRange = {
+  const PriceRange = {
     MID: 10000,
     HIGH: 50000
   };
@@ -32,30 +32,30 @@
   const updatePins = () => {
 
     const sortByType = (house) => {
-      if (typeFilter.value === housingType.ANY) {
+      if (typeFilter.value === housingType.any) {
         return true;
       }
       return house.offer.type === typeFilter.value;
     };
 
     const sortByPrice = (house) => {
-      if (priceFilter.value === housingPrice.ANY) {
+      if (priceFilter.value === housingPrice.any) {
         return true;
-      } else if (priceFilter.value === housingPrice.LOW) {
-        return house.offer.price <= priceRange.MID;
-      } else if (priceFilter.value === housingPrice.MID) {
-        return house.offer.price >= priceRange.MID && house.offer.price <= priceRange.HIGH;
+      } else if (priceFilter.value === housingPrice.low) {
+        return house.offer.price <= PriceRange.MID;
+      } else if (priceFilter.value === housingPrice.mid) {
+        return house.offer.price >= PriceRange.MID && house.offer.price <= PriceRange.HIGH;
       }
-      return house.offer.price >= priceRange.HIGH;
+      return house.offer.price >= PriceRange.HIGH;
     };
     const sortByRooms = (house) => {
-      if (roomsFilter.value === housingRooms.ANY) {
+      if (roomsFilter.value === housingRooms.any) {
         return true;
       }
       return house.offer.rooms === Number(roomsFilter.value);
     };
     const sortByGuests = (house) => {
-      if (guestsFilter.value === housingGuests.ANY) {
+      if (guestsFilter.value === housingGuests.any) {
         return true;
       } else if (guestsFilter.value === housingGuests[0]) {
         return false;
@@ -68,7 +68,7 @@
         return house.offer.features.includes(element.value);
       });
     };
-    const filteredHouses = window.pins.houses.houses.filter(sortByType).filter(sortByPrice).filter(sortByRooms).filter(sortByGuests).filter(sortByFeatures).slice(0, MAX_PINS_TO_DISPLAY);
+    const filteredHouses = window.pins.houses.sortedHouses.filter(sortByType).filter(sortByPrice).filter(sortByRooms).filter(sortByGuests).filter(sortByFeatures).slice(0, MAX_PINS_TO_DISPLAY);
     window.filter.filteredHouses = {
       filteredHouses
     };
