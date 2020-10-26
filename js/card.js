@@ -76,7 +76,7 @@
     document.addEventListener(`keydown`, window.utils.onPopUpEscPress);
     newCardCloseButton.addEventListener(`click`, window.utils.closePopup);
   };
-  window.nodes.mainPinButton.addEventListener(`mousedown`, window.utils.onPinMouseDown);
+  window.nodes.mainPinButton.addEventListener(`mousedown`, window.pins.onPinMouseDown);
 
   window.card = {
     fillCard

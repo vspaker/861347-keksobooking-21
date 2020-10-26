@@ -7,7 +7,7 @@
   const housingPrice = {
     any: `any`,
     low: `low`,
-    mid: `mid`,
+    mid: `middle`,
   };
   const housingRooms = {
     any: `any`

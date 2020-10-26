@@ -56,9 +56,48 @@
       }
     });
   };
+  const onPinMouseDown = (evt) => {
+    if (evt.button === 0) {
+      evt.preventDefault();
+      let startCoords = {
+        x: evt.clientX,
+        y: evt.clientY
+      };
+      let dragged = false;
+      const onMouseMove = (moveEvt) => {
+        moveEvt.preventDefault();
+        dragged = true;
+        window.utils.shift = {
+          x: startCoords.x - moveEvt.clientX,
+          y: startCoords.y - moveEvt.clientY
+        };
+        startCoords = {
+          x: moveEvt.clientX,
+          y: moveEvt.clientY
+        };
+        window.utils.calculateCoords();
+      };
+      const onMouseUp = (upEvt) => {
+        upEvt.preventDefault();
+        window.nodes.mapBlock.removeEventListener(`mousemove`, onMouseMove);
+        document.removeEventListener(`mouseup`, onMouseUp);
+        if (dragged) {
+          const onClickPreventDefault = (clickEvt) => {
+            clickEvt.preventDefault();
+            window.utils.calculateCoords();
+            window.nodes.mainPinButton.removeEventListener(`click`, onClickPreventDefault);
+          };
+          window.nodes.mainPinButton.addEventListener(`click`, onClickPreventDefault);
+        }
+      };
+      window.nodes.mapBlock.addEventListener(`mousemove`, onMouseMove);
+      document.addEventListener(`mouseup`, onMouseUp);
+    }
+  };
   window.pins = {
     removePins,
     renderPins,
-    removeActiveClass
+    removeActiveClass,
+    onPinMouseDown
   };
 })();

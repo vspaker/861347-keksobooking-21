@@ -7,27 +7,31 @@
   const timeIn = window.nodes.adForm.querySelector(`#timein`);
   const timeOut = window.nodes.adForm.querySelector(`#timeout`);
 
-  const validateForm = () => {
+  const RoomsQuantity = {
+    3: 3
+  };
+  const MinPrice = {
+    BUNGALO: 0,
+    FLAT: 1000,
+    HOUSE: 5000,
+    PALACE: 10000
+  };
+  const houseTypes = {
+    bungalo: `bungalo`,
+    flat: `flat`,
+    house: `house`,
+    palace: `palace`
+  };
+  const MAX_PRICE = 1000000;
 
-    const MinPrice = {
-      FLAT: 1000,
-      HOUSE: 5000,
-      PALACE: 10000
-    };
-    const houseTypes = {
-      bungalo: `bungalo`,
-      flat: `flat`,
-      house: `house`,
-      palace: `palace`
-    };
-    const MAX_PRICE = 1000000;
+  const validateForm = () => {
 
     const roomsQuantityInputValue = Number(roomsQuantityInput.value);
     const guestsQuantityInputValue = Number(guestsQuantityInput.value);
 
-    if (roomsQuantityInputValue > 3 && guestsQuantityInputValue !== 0) {
+    if (roomsQuantityInputValue > RoomsQuantity[3] && guestsQuantityInputValue !== 0) {
       guestsQuantityInput.setCustomValidity(`Сто комнат — только не для гостей`);
-    } else if (guestsQuantityInputValue === 0 && roomsQuantityInputValue <= 3) {
+    } else if (guestsQuantityInputValue === 0 && roomsQuantityInputValue <= RoomsQuantity[3]) {
       guestsQuantityInput.setCustomValidity(`Не для гостей только 100 комнат`);
     } else if (roomsQuantityInputValue < guestsQuantityInputValue) {
       guestsQuantityInput.setCustomValidity(`Каждая комната вмещает только одного гостя`);
@@ -37,21 +41,17 @@
 
     if (accomodationType.value === houseTypes.bungalo) {
       accomodationPrice.setCustomValidity(``);
-      accomodationPrice.placeholder = 0;
+      accomodationPrice.placeholder = MinPrice.BUNGALO;
     } else if (accomodationType.value === houseTypes.flat && accomodationPrice.value < MinPrice.FLAT) {
       accomodationPrice.setCustomValidity(`Минимальная стоимость квартиры — 1000 ₽`);
-      accomodationPrice.placeholder = 1000;
+      accomodationPrice.placeholder = MinPrice.FLAT;
     } else if (accomodationType.value === houseTypes.house && accomodationPrice.value < MinPrice.HOUSE) {
       accomodationPrice.setCustomValidity(`Минимальная стоимость дома — 5000 ₽`);
-      accomodationPrice.placeholder = 5000;
+      accomodationPrice.placeholder = MinPrice.HOUSE;
     } else if (accomodationType.value === houseTypes.palace && accomodationPrice.value < MinPrice.PALACE) {
       accomodationPrice.setCustomValidity(`Минимальная стоимость дворца — 10000 ₽`);
-      accomodationPrice.placeholder = 10000;
-    } else {
-      accomodationPrice.setCustomValidity(``);
-    }
-
-    if (accomodationPrice.value > MAX_PRICE) {
+      accomodationPrice.placeholder = MinPrice.PALACE;
+    } else if (accomodationPrice.value > MAX_PRICE) {
       accomodationPrice.setCustomValidity(`Максимальная цена за ночь: ${MAX_PRICE}`);
     } else {
       accomodationPrice.setCustomValidity(``);
