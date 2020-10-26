@@ -23,7 +23,6 @@
       parentPinBlock.appendChild(newPin);
     }
   };
-
   const successHandler = (houses) => {
     const sortByOffer = (house) => {
       return house.hasOwnProperty(`offer`);
